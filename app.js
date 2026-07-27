@@ -2,13 +2,13 @@
 const search = document.getElementById("search");
 const cards = document.querySelectorAll(".card");
 
-search.addEventListener("keyup", () => {
+search.addEventListener("input", () => {
 
     const value = search.value.toLowerCase();
 
     cards.forEach(card => {
 
-        const name = card.querySelector("h3").textContent.toLowerCase();
+        const name = card.dataset.name.toLowerCase();
 
         if (name.includes(value)) {
             card.style.display = "block";
@@ -20,7 +20,11 @@ search.addEventListener("keyup", () => {
 
 });
 
-// Open selected model
-function openModel(modelName) {
-    window.location.href = `viewer.html?model=${encodeURIComponent(modelName)}`;
+// Open model
+function openModel(model) {
+
+    window.location.href =
+        "viewer.html?model=" +
+        encodeURIComponent(model);
+
 }
