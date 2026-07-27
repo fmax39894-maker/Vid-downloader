@@ -1,18 +1,14 @@
-import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
-import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
-import { OBJLoader } from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/OBJLoader.js";
+// viewer.js
 
 const params = new URLSearchParams(window.location.search);
-const modelName = params.get("model") || "heart";
+const model = params.get("model");
 
-document.getElementById("modelName").textContent =
-    modelName.charAt(0).toUpperCase() + modelName.slice(1);
+document.getElementById("modelName").textContent = model || "Model";
 
-// Download
 document.getElementById("downloadBtn").onclick = () => {
     const a = document.createElement("a");
-    a.href = `models/${modelName}.obj`;
-    a.download = `${modelName}.obj`;
+    a.href = "models/" + model + ".obj";
+    a.download = model + ".obj";
     a.click();
 };
 
@@ -27,127 +23,108 @@ const camera = new THREE.PerspectiveCamera(
     0.1,
     1000
 );
-camera.position.set(0, 2, 5);
+
+camera.position.set(0, 1, 5);
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
     antialias: true
 });
 
-renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(
     window.innerWidth,
     window.innerHeight - 60
 );
 
+renderer.setPixelRatio(window.devicePixelRatio);
+
 document.getElementById("viewer").appendChild(renderer.domElement);
 
 // Controls
-const controls = new OrbitControls(
+const controls = new THREE.OrbitControls(
     camera,
     renderer.domElement
 );
 
 controls.enableDamping = true;
-controls.dampingFactor = 0.08;
 
 // Lights
-scene.add(new THREE.AmbientLight(0xffffff, 2));
+scene.add(new THREE.AmbientLight(0xffffff, 1.5));
 
-const light = new THREE.DirectionalLight(0xffffff, 3);
-light.position.set(5, 10, 8);
+const light = new THREE.DirectionalLight(0xffffff, 2);
+light.position.set(5, 10, 5);
 scene.add(light);
 
-// Grid (optional)
-const grid = new THREE.GridHelper(10, 10);
-grid.position.y = -1.5;
-scene.add(grid);
-
-// Loader
-const loader = new OBJLoader();
+// Load OBJ
+const loader = new THREE.OBJLoader();
 
 loader.load(
+    "models/" + model + ".obj",
 
-    `models/${modelName}.obj`,
+    function(object){
 
-    (object) => {
+        object.traverse(function(child){
 
-        object.traverse((child) => {
+            if(child.isMesh){
 
-            if (child.isMesh) {
-
-                child.material = new THREE.MeshStandardMaterial({
-                    color: 0xcfcfcf,
-                    metalness: 0,
-                    roughness: 1
-                });
+                child.material = new THREE.MeshNormalMaterial();
 
             }
 
         });
 
-        // Center model
         const box = new THREE.Box3().setFromObject(object);
+
         const center = box.getCenter(new THREE.Vector3());
 
         object.position.sub(center);
 
-        // Scale model
         const size = box.getSize(new THREE.Vector3());
-        const max = Math.max(size.x, size.y, size.z);
 
-        const scale = 3 / max;
+        const max = Math.max(size.x,size.y,size.z);
 
-        object.scale.setScalar(scale);
+        object.scale.setScalar(3/max);
 
         scene.add(object);
 
     },
 
-    (xhr) => {
+    undefined,
 
-        if (xhr.total) {
-            console.log(
-                Math.round((xhr.loaded / xhr.total) * 100) + "%"
-            );
-        }
+    function(error){
 
-    },
+        console.error(error);
 
-    (err) => {
-
-        console.error(err);
-
-        alert("Unable to load model.");
+        alert("Cannot load models/" + model + ".obj");
 
     }
 
 );
 
 // Resize
-window.addEventListener("resize", () => {
+window.addEventListener("resize",()=>{
 
-    camera.aspect =
-        window.innerWidth /
-        (window.innerHeight - 60);
+    camera.aspect=
+    window.innerWidth/
+    (window.innerHeight-60);
 
     camera.updateProjectionMatrix();
 
     renderer.setSize(
         window.innerWidth,
-        window.innerHeight - 60
+        window.innerHeight-60
     );
 
 });
 
 // Animation
-function animate() {
+function animate(){
 
     requestAnimationFrame(animate);
 
     controls.update();
 
-    renderer.render(scene, camera);
+    renderer.render(scene,camera);
 
 }
 
