@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>3D Model Viewer</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#111;
+}
+
+#topbar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:60px;
+    background:#1c1c1c;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 15px;
+    z-index:100;
+    box-sizing:border-box;
+}
+
+#topbar button{
+    background:#0d6efd;
+    color:#fff;
+    border:none;
+    padding:10px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+#modelName{
+    color:#fff;
+    font-size:20px;
+    font-weight:bold;
+}
+
+#viewer{
+    position:absolute;
+    top:60px;
+    left:0;
+    width:100%;
+    height:calc(100% - 60px);
+}
+
+canvas{
+    display:block;
+}
+
+</style>
+
+</head>
+<body>
+
+<div id="topbar">
+
+<button onclick="history.back()">⬅ Back</button>
+
+<div id="modelName">Loading...</div>
+
+<button id="downloadBtn">⬇ Download</button>
+
+</div>
+
+<div id="viewer"></div>
+
+<!-- Three.js -->
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+
+<!-- OBJ Loader -->
+<script src="https://unpkg.com/three@0.160.0/examples/js/loaders/OBJLoader.js"></script>
+
+<!-- Orbit Controls -->
+<script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+
+<!-- Viewer Script -->
+<script src="viewer.js"></script>
+
+</body>
+</html>
